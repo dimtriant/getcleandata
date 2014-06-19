@@ -1,22 +1,27 @@
+#############################################################
+###############Getting and Cleaning Data Project#############
+#############################################################
+
 ##Retrieve the test data#####################################
 
-# setwd("c:/UCI HAR Dataset/test")
-# subject_test <- read.table("subject_test.txt")
-# x_test <- read.table("X_test.txt")
-# y_test <- read.table("y_test.txt")
+setwd("c:/UCI HAR Dataset/test")
+subject_test <- read.table("subject_test.txt")
+x_test <- read.table("X_test.txt")
+y_test <- read.table("y_test.txt")
 
 ##Retrieve the train data####################################
 
-# setwd("c:/UCI HAR Dataset/train")
-# subject_train <- read.table("subject_train.txt")
-# x_train <- read.table("X_train.txt")
-# y_train <- read.table("y_train.txt")
+setwd("c:/UCI HAR Dataset/train")
+subject_train <- read.table("subject_train.txt")
+x_train <- read.table("X_train.txt")
+y_train <- read.table("y_train.txt")
 
 ##Read activity labels & features############################
 
 setwd("c:/UCI HAR Dataset")
 act_labels <- read.table("activity_labels.txt")
 feature_labels <- read.table("features.txt")
+colnames(act_labels) <- c("activity_ID","activity_Name")
 
 ##Replace x_test & x_train labels with the feature labels
 
@@ -45,14 +50,32 @@ col_select_test <- c(1,2,col_select_test)
 col_select_train <-  grep(paste(c("mean","std"), collapse = "|"),colnames(test_dat))
 col_select_train <- c(1,2,col_select_train)
 
+##Remove columns with meanFreq labels######################
+
+logic <- col_select_test %in% grep("meanFreq",colnames(test_dat))
+col_select_test <- col_select_test[!logic]
+logic <- col_select_train %in% grep("meanFreq",colnames(train_dat))
+col_select_train <- col_select_train[!logic]
+
 ##Reduce both datasets to the columns relevant to mean and stdev
 
-#test_dat_with_labels <- merge(test_dat,act_labels,by.x="activity_ID",by.y="V1")
+test_clean <- test_dat[,col_select_test]
 
+train_clean <- train_dat[,col_select_train]
 
-##Merge the y_test & y_train datasets with the act_labels
+##Combine the test and train dataset with rbind()##########
 
-#y_test_labels  <- merge(y_test,act_labels,by.x="activity_ID",by.y="V1",all=TRUE)
+data_clean <- rbind(test_clean,train_clean)
 
-##Concatenate all data from test into a single dataframe. Do the same for train.
+##Replace act_Labels with activity_Names in the data_clean dataset
 
+data_clean_labels  <- merge(data_clean,act_labels,by.x="activity_ID",by.y="activity_ID",all=TRUE)
+data_clean_labels$activity_ID <- NULL
+data_clean_labels <- subset(data_clean_labels, select=c(68,1,2:67))
+
+##Melt the data_clean_labels dataset#######################
+library(reshape2)
+data_melt <- melt(data_clean_labels, id=c("subject_ID","activity_Name"))
+
+##Create a tidy summarizing dataset using dcast()
+data_tidy <- dcast(data_melt,subject_ID + activity_Name~variable,mean)
