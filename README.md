@@ -1,5 +1,5 @@
 #Coursera Getting and Cleaning Data
-##Course Project
+##Course Project README File
 
 This README file is intended to guide you through the run_Analysis.R script.
 
