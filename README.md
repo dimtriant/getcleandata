@@ -35,3 +35,13 @@ The final result of the script is the data_tidy dataframe. This is a tidy datase
 - Each variable is in a separate column
 - Each variable observation is in a different row
 - Each column has a descriptive label
+
+###**WARNING**
+
+It is not easy to read the data_tidy file in its text format. It is suggested that you import it in R and read it from there. The steps to do that are:
+
+1. Place data_tidy.txt in your R working directory.
+2. In the R console type data_tidy <- read.table("data_tidy.txt"). You should now have a data frame calles data_tidy.
+3. To have a look at the column names type names(data_tidy).
+4. To view the first few rows of data_tidy, type head(data_tidy).
+5. To view the whole data frame type data_tidy.
