@@ -77,5 +77,7 @@ data_clean_labels <- subset(data_clean_labels, select=c(68,1,2:67))
 library(reshape2)
 data_melt <- melt(data_clean_labels, id=c("subject_ID","activity_Name"))
 
-##Create a tidy summarizing dataset using dcast()
+##Create a tidy summarizing dataset using dcast()#########
 data_tidy <- dcast(data_melt,subject_ID + activity_Name~variable,mean)
+
+write.table(data_tidy, "data_tidy.txt")
